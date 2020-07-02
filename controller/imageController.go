@@ -106,7 +106,12 @@ func UploadToS3(c *gin.Context) {
 	}
 	uuid4 := uuid.Must(uuid.NewV4())
 	keyName := uuid4.String() + ".jpg"
-	modelImage.SaveImageToS3(processedImage, keyName)
+	_, err = modelImage.SaveImageToS3(processedImage, keyName)
+	if err != nil {
+		c.Abort()
+		errorHandler(err, "Image upload fail")
+		return
+	}
 	c.JSON(200, gin.H{
 		"url": "https://s3-" + os.Getenv("AWS_REGION") + ".amazonaws.com/" + os.Getenv("IMAGE_BUCKET_NAME") + "/" + keyName,
 	})
