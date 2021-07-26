@@ -3,10 +3,10 @@ package imageController
 import (
 	"bytes"
 	"fmt"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
+	"github.com/spf13/viper"
 
 	imgur "file-service/external"
 	helperImage "file-service/helper"
@@ -27,7 +27,7 @@ func UploadToImgur(c *gin.Context) {
 		_, a, _ := c.Request.FormFile("upload")
 		return a.Size
 	}
-	dynamodbFileServiceImageName := os.Getenv("DYNAMODB_FILE_SERVICE_IMAGES_NAME")
+	dynamodbFileServiceImageName := viper.GetString("DYNAMODB_FILE_SERVICE_IMAGES_NAME")
 	var imageMaxSize int64 = 100
 
 	width, _, err := helperImage.GetSize(getImageBuffer())
@@ -113,6 +113,6 @@ func UploadToS3(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{
-		"url": "https://s3-" + os.Getenv("AWS_REGION") + ".amazonaws.com/" + os.Getenv("IMAGE_BUCKET_NAME") + "/" + keyName,
+		"url": "https://s3-" + viper.GetString("AWS_REGION") + ".amazonaws.com/" + viper.GetString("IMAGE_BUCKET_NAME") + "/" + keyName,
 	})
 }

@@ -2,18 +2,14 @@ package main
 
 import (
 	imageController "file-service/controller"
-	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
 func main() {
 	// init
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	viper.AutomaticEnv()
 
 	// route
 	r := gin.Default()

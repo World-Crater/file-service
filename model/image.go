@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -13,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/google/uuid"
+	"github.com/spf13/viper"
 )
 
 type Image struct {
@@ -30,7 +30,7 @@ func SaveImage(tableName string, url string) (*dynamodb.PutItemOutput, error) {
 	// credentials from the shared credentials file ~/.aws/credentials
 	// and region from the shared configuration file ~/.aws/config.
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(os.Getenv("AWS_REGION")),
+		Region: aws.String(viper.GetString("AWS_REGION")),
 	})
 
 	// Create DynamoDB client
@@ -77,7 +77,7 @@ func SaveImageToS3(image *bytes.Buffer, key string) (*s3manager.UploadOutput, er
 
 	// Upload the file to S3.
 	result, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(os.Getenv("IMAGE_BUCKET_NAME")),
+		Bucket: aws.String(viper.GetString("IMAGE_BUCKET_NAME")),
 		Key:    aws.String(key),
 		Body:   f,
 		ACL:    aws.String("public-read"),

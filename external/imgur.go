@@ -2,25 +2,26 @@ package imgur
 
 import (
 	"bytes"
-	"net/http"
 	"encoding/json"
-	"os"
-	"io/ioutil"
-	"log"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+
+	"github.com/spf13/viper"
 )
 
 type POSTResponse struct {
-    Data struct {
-		Link     string      `json:"link"`
+	Data struct {
+		Link string `json:"link"`
 	} `json:"data"`
 }
 
 func Upload(file *bytes.Buffer) (string, error) {
 	client := &http.Client{}
 	req, _ := http.NewRequest("POST", "https://api.imgur.com/3/image", file)
-	req.Header.Add("Authorization", "Client-ID "+os.Getenv("IMGUR_CLINET_ID"))
+	req.Header.Add("Authorization", "Client-ID "+viper.GetString("IMGUR_CLINET_ID"))
 	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
@@ -34,7 +35,7 @@ func Upload(file *bytes.Buffer) (string, error) {
 	}
 	var t POSTResponse
 	err = json.Unmarshal(body, &t)
-    if err != nil {
+	if err != nil {
 		fmt.Println(err)
 		return "", errors.New("JSON parse error")
 	}
